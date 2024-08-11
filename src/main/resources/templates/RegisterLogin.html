@@ -34,19 +34,25 @@
 
         <!-- Login Form -->
         <form id="login-form" method="POST" th:action="@{/login}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> <!-- CSRF Token -->
             <div class="form-group">
                 <label for="login-email">Email:</label>
-                <input type="email" class="form-control" id="login-email" name="name" required/>
+                <input type="email" class="form-control" id="login-email" name="email" required/>
             </div>
             <div class="form-group">
                 <label for="login-password">Password:</label>
                 <input type="password" class="form-control" id="login-password" name="password" required/>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="remember-me" name="remember-me"/>
+                <label class="form-check-label" for="remember-me">Remember Me</label>
             </div>
             <button type="submit" class="btn btn-primary btn-block">Login</button>
         </form>
 
         <!-- Register Form -->
         <form id="register-form" method="POST" th:action="@{/register}" style="display: none;" th:object="${user}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> <!-- CSRF Token -->
             <div class="form-group">
                 <label for="register-name">Name:</label>
                 <input type="text" class="form-control" id="register-name" name="name" th:field="*{name}" required/>
@@ -73,25 +79,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $("#toggle-btn").click(function() {
-            if ($("#login-form").is(":visible")) {
-                // Switch to register form
-                $("#login-form").hide();
-                $("#register-form").show();
-                $("#form-title").text("Register");
-                $("#toggle-text").text("Already have an account?");
-                $("#toggle-btn").text("Login here");
-            } else {
-                // Switch to login form
-                $("#register-form").hide();
-                $("#login-form").show();
-                $("#form-title").text("Login");
-                $("#toggle-text").text("Don't have an account?");
-                $("#toggle-btn").text("Register here");
-            }
-        });
-    });
+	$(document).ready(function() {
+	    $("#toggle-btn").click(function() {
+	        if ($("#login-form").is(":visible")) {
+	            $("#login-form").hide();
+	            $("#register-form").show();
+	            $("#form-title").text("Register");
+	            $("#toggle-text").text("Already have an account?");
+	            $("#toggle-btn").text("Login here");
+	        } else {
+	            $("#register-form").hide();
+	            $("#login-form").show();
+	            $("#form-title").text("Login");
+	            $("#toggle-text").text("Don't have an account?");
+	            $("#toggle-btn").text("Register here");
+	        }
+	    });
+	});
+
 </script>
 </body>
 </html>

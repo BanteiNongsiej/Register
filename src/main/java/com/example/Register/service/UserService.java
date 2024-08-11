@@ -17,6 +17,8 @@ public class UserService {
     }
 
     public void registerUser(User user) {
+    	System.out.println("Registering user: " + user);
         userRepository.saveUser(user);
     }
+    
 }
