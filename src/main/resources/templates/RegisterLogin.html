@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .auth-card {
+            max-width: 500px;
+            margin: 100px auto; /* Center the card vertically */
+            padding: 20px;
+            background-color: #f8f9fa; /* Light grey background */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-btn {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .toggle-btn:hover {
+            color: darkblue;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="auth-container" class="auth-card">
+        <h1 id="form-title" class="text-center">Login</h1>
+
+        <!-- Login Form -->
+        <form id="login-form" method="POST" th:action="@{/login}">
+            <div class="form-group">
+                <label for="login-email">Email:</label>
+                <input type="email" class="form-control" id="login-email" name="name" required/>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password:</label>
+                <input type="password" class="form-control" id="login-password" name="password" required/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" method="POST" th:action="@{/register}" style="display: none;" th:object="${user}">
+            <div class="form-group">
+                <label for="register-name">Name:</label>
+                <input type="text" class="form-control" id="register-name" name="name" th:field="*{name}" required/>
+            </div>
+            <div class="form-group">
+                <label for="register-email">Email:</label>
+                <input type="email" class="form-control" id="register-email" name="email" th:field="*{email}" required/>
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password:</label>
+                <input type="password" class="form-control" id="register-password" name="password" th:field="*{password}" required/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </form>
+
+        <p class="mt-3 text-center">
+            <span id="toggle-text">Don't have an account?</span>
+            <span id="toggle-btn" class="toggle-btn">Register here</span>
+        </p>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#toggle-btn").click(function() {
+            if ($("#login-form").is(":visible")) {
+                // Switch to register form
+                $("#login-form").hide();
+                $("#register-form").show();
+                $("#form-title").text("Register");
+                $("#toggle-text").text("Already have an account?");
+                $("#toggle-btn").text("Login here");
+            } else {
+                // Switch to login form
+                $("#register-form").hide();
+                $("#login-form").show();
+                $("#form-title").text("Login");
+                $("#toggle-text").text("Don't have an account?");
+                $("#toggle-btn").text("Register here");
+            }
+        });
+    });
+</script>
+</body>
+</html>
