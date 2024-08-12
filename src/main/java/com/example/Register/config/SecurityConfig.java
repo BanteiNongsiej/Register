@@ -21,10 +21,10 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final UserRepository userLoginRepo;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(UserRepository userLoginRepo) {
-        this.userLoginRepo = userLoginRepo;
+    public SecurityConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -40,7 +40,7 @@ public class SecurityConfig {
             .formLogin(login -> login
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/createStudent")
+                .defaultSuccessUrl("/createStudent", true) // Redirect to /createStudent after login
                 .failureUrl("/login?error=Authentication Error")
                 .permitAll()
             )
@@ -70,7 +70,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new LoginService(userLoginRepo);
+        return new LoginService(userRepository);
     }
 
     @Bean
