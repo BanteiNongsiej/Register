@@ -29,11 +29,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf
+        
+    	http.csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             )
-            .authorizeHttpRequests(authz -> authz
+            .authorizeHttpRequests((authorize) -> authorize
                 .requestMatchers("/login", "/register", "/test").permitAll() // Allow these paths without authentication
                 .anyRequest().authenticated() // All other requests require authentication
             )

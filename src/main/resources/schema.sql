@@ -1,17 +1,17 @@
 -- Create courses table
-CREATE TABLE courses (
+CREATE TABLE IF NOT EXISTS courses (
     course_id SERIAL PRIMARY KEY,
     course_name VARCHAR(255) NOT NULL
 );
 
 -- Create subjects table
-CREATE TABLE subjects (
+CREATE TABLE IF NOT EXISTS subjects (
     subject_id SERIAL PRIMARY KEY,
     subject_name VARCHAR(255) NOT NULL
 );
 
 -- Create students table
-CREATE TABLE students (
+CREATE TABLE IF NOT EXISTS students (
     student_id SERIAL PRIMARY KEY,
     student_name VARCHAR(255) NOT NULL,
     student_class VARCHAR(255) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE students (
 );
 
 -- Create a join table for many-to-many relationship between courses and subjects
-CREATE TABLE course_subjects (
+CREATE TABLE IF NOT EXISTS course_subjects (
     course_id BIGINT,
     subject_id BIGINT,
     PRIMARY KEY (course_id, subject_id),
@@ -31,7 +31,7 @@ CREATE TABLE course_subjects (
     FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
 );
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255) UNIQUE NOT NULL,

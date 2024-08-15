@@ -21,6 +21,18 @@
         .logout-btn:hover {
             background-color: #c82333;
         }
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-row .col {
+            padding-right: 15px;
+        }
+
+        .form-row .col:last-child {
+            padding-right: 0;
+        }
     </style>
 </head>
 <body>
@@ -38,35 +50,48 @@
             <label for="studentName">Name:</label>
             <input type="text" class="form-control" id="studentName" th:field="*{student_name}"/>
         </div>
-        <div class="form-group">
-            <label for="studentClass">Class:</label>
-            <input type="text" class="form-control" id="studentClass" th:field="*{student_class}"/>
-        </div>
-        <div class="form-group">
-            <label for="studentRoll">Roll No:</label>
-            <input type="text" class="form-control" id="studentRoll" th:field="*{student_roll}"/>
-        </div>
-        <div class="form-group">
-            <label for="courseSelect">Course:</label>
-            <select id="courseSelect" class="form-control" name="courseId" th:field="*{courseId}">
-                <option value="">-- Select Course --</option>
-                <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="subjectSelect">Subject:</label>
-            <select id="subjectSelect" class="form-control" th:field="*{subjectId}">
-                <option value="">-- Select Subject --</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <div th:if="${newStudent}">
-                <input type="hidden" id="newStudent" value="new">
-                <button type="submit" class="btn btn-primary">Add Student</button>
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="studentRoll">Roll No:</label>
+                    <input type="text" class="form-control" id="studentRoll" th:field="*{student_roll}"/>
+                </div>
             </div>
-            <div th:if="${not newStudent}">
-                <button type="submit" class="btn btn-primary">Edit Student</button>
+            <div class="col">
+                <div class="form-group">
+                    <label for="studentClass">Class:</label>
+                    <select id="studentClass" class="form-control" th:field="*{student_class}">
+                        <option value="">-- Select Class --</option>
+                        <option value="12th">12th Grade</option>
+                        <option value="11th">11th Grade</option>
+                    </select>
+                </div>
             </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="courseSelect">Course:</label>
+                    <select id="courseSelect" class="form-control" name="courseId" th:field="*{courseId}">
+                        <option value="">-- Select Course --</option>
+                        <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label for="subjectSelect">Subject:</label>
+                    <select id="subjectSelect" class="form-control" th:field="*{subjectId}" disabled>
+                        <option value="">-- Select Subject --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary mr-2" th:text="${newStudent ? 'Add Student' : 'Edit Student'}"></button>
             <a href="#" class="btn btn-secondary" th:href="@{/createStudent}">Reset</a>
         </div>
     </form>
@@ -89,7 +114,7 @@
             <td th:text="${student.student_class}"></td>
             <td th:text="${student.student_roll}"></td>
             <td th:text="${student.course.courseName}"></td>
-            <td th:text="${student.subject.subjectName}"> </td>
+            <td th:text="${student.subject.subjectName}"></td>
             <td>
                 <a th:href="@{/edit/{id}(id=${student.studentId})}" class="btn btn-sm btn-primary mr-2">Edit</a>
                 <a th:href="@{/delete/{id}(id=${student.studentId})}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
@@ -106,6 +131,7 @@
             console.log("Selected Course:", selectedCourse);
             if (selectedCourse) {
                 fetchSubjects(selectedCourse);
+                $("#subjectSelect").prop("disabled", false);
             } else {
                 $("#subjectSelect").empty().append('<option value="">-- Select Subject --</option>').prop("disabled", true);
             }
@@ -119,13 +145,11 @@
             dataType: 'json',
             success: function(data) {
                 console.log(data);
-                $("#subjectSelect").empty().append('<option value="">Select Subject</option>');
+                $("#subjectSelect").empty().append('<option value="">-- Select Subject --</option>');
                 $.each(data, function(index, subject) {
-                    console.log(subject.subject_name);
                     var option = $("<option></option>").attr("value", subject.subjectId).text(subject.subjectName);
                     $("#subjectSelect").append(option);
                 });
-                $("#subjectSelect").prop("disabled", false);
             },
             error: function(xhr, status, error) {
                 console.error("Error fetching subjects:", error);

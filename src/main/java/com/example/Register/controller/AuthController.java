@@ -57,8 +57,8 @@ public class AuthController {
 
             // Check if the users table exists
             if (!databaseService.doesUsersTableExist()) {
-                logger.error("Users table does not exist.");
-                model.addAttribute("registrationError", "Error: Users table does not exist.");
+                logger.error("users table does not exist.");
+                model.addAttribute("registrationError", "Error: users table does not exist.");
                 return "RegisterLogin";
             }
 
