@@ -36,6 +36,13 @@ public class StudentController {
         List<Student> students = studentService.getAllStudents();
         return "redirect:/createStudent";
     }
+    
+    
+//    @PostMapping("/saveStudent")
+//    public ResponseEntity<Student> saveStudent(@RequestBody Student student){
+//    	studentService.createStudent(student);
+//    	return ResponseEntity.ok(student);
+//    }
 
     @PostMapping("/updateStudent")
     public String updateStudent(@ModelAttribute("student") Student student){
@@ -44,7 +51,14 @@ public class StudentController {
         List<Student> students = studentService.getAllStudents();
         return "redirect:/createStudent";
     }
-
+    
+//    @PostMapping("/updateStudent")
+//    public ResponseEntity<Student> updateStudent (@RequestBody Student student){
+//		studentService.updateStudent(student);
+//    	return ResponseEntity.ok(student);
+//    	
+//    }
+    
     @GetMapping("/createStudent")
     public String createStudent(Model model) {
         try {
@@ -86,20 +100,32 @@ public class StudentController {
 
     @GetMapping("/edit/{id}")
     public String editStudent(@PathVariable Long id, Model model) {
-        Optional<Student> student = Optional.of(studentService.getStudentById(id).get());
-        model.addAttribute("student", student);
-        model.addAttribute("courses", courseService.getAllCourses());
-        List<Student> students = studentService.getAllStudents();
-        model.addAttribute("listStudents", students);
-        model.addAttribute("newStudent", false);
-        return "StudentForm";
+        Optional<Student> student = studentService.getStudentById(id);
+        if (student.isPresent()) {
+            model.addAttribute("student", student.get());
+            model.addAttribute("courses", courseService.getAllCourses());
+            model.addAttribute("subjects", subjectService.getSubjectsByCourseId(student.get().getCourseId())); // Ensure subjects are populated based on course
+            model.addAttribute("listStudents", studentService.getAllStudents());
+            model.addAttribute("newStudent", false);
+            return "StudentForm";
+        }
+        return "redirect:/createStudent";
     }
+
 
     @GetMapping("/delete/{id}")
     public String deleteStudent(@PathVariable Long id) {
+    	System.out.println("Deleting student with ID: " + id);
         studentService.deleteStudent(id);
         return "redirect:/createStudent";
     }
+    
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+//        studentService.deleteStudent(id);
+//        return ResponseEntity.ok().build();
+//    }
+
 
     @GetMapping("/favicon.ico")
     @ResponseBody
