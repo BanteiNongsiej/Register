@@ -7,23 +7,69 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background: linear-gradient(to right, #00c6ff, #0072ff); /* Gradient background */
+            font-family: Arial, sans-serif;
+        }
+
         .auth-card {
             max-width: 500px;
             margin: 100px auto; /* Center the card vertically */
-            padding: 20px;
-            background-color: #f8f9fa; /* Light grey background */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            background-color: #ffffff; /* White background */
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 1px solid #e1e1e1; /* Light grey border */
+        }
+
+        .auth-card h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
 
         .toggle-btn {
             cursor: pointer;
-            color: blue;
+            color: #007bff;
             text-decoration: underline;
+            font-weight: bold;
         }
 
         .toggle-btn:hover {
-            color: darkblue;
+            color: #0056b3;
+        }
+
+        .text-center {
+            text-align: center;
         }
     </style>
 </head>
@@ -79,24 +125,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
-	$(document).ready(function() {
-	    $("#toggle-btn").click(function() {
-	        if ($("#login-form").is(":visible")) {
-	            $("#login-form").hide();
-	            $("#register-form").show();
-	            $("#form-title").text("Register");
-	            $("#toggle-text").text("Already have an account?");
-	            $("#toggle-btn").text("Login here");
-	        } else {
-	            $("#register-form").hide();
-	            $("#login-form").show();
-	            $("#form-title").text("Login");
-	            $("#toggle-text").text("Don't have an account?");
-	            $("#toggle-btn").text("Register here");
-	        }
-	    });
-	});
-
+    $(document).ready(function() {
+        $("#toggle-btn").click(function() {
+            if ($("#login-form").is(":visible")) {
+                $("#login-form").hide();
+                $("#register-form").show();
+                $("#form-title").text("Register");
+                $("#toggle-text").text("Already have an account?");
+                $("#toggle-btn").text("Login here");
+            } else {
+                $("#register-form").hide();
+                $("#login-form").show();
+                $("#form-title").text("Login");
+                $("#toggle-text").text("Don't have an account?");
+                $("#toggle-btn").text("Register here");
+            }
+        });
+    });
 </script>
 </body>
 </html>

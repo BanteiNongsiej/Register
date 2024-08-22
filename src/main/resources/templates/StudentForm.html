@@ -20,94 +20,71 @@
         .logout-btn:hover {
             background-color: #c82333;
         }
-        .container {
-            margin-top: 20px;
-        }
-        .form-row {
-            margin-bottom: 20px;
-        }
-        .form-row .col {
-            padding-right: 15px;
-        }
-        .form-row .col:last-child {
-            padding-right: 0;
-        }
-        .btn-group {
-            margin-top: 10px;
-        }
-        .editBtn, .deleteBtn {
-            cursor: pointer;
-        }
-        .btn-spacing {
-            margin-left: 10px; /* Adjust spacing between buttons */
-        }
     </style>
 </head>
 <body>
-<div class="container">
+<div class="container mt-4">
     <div class="d-flex justify-content-between mb-4">
-        <h1>Student Form</h1>
+        <h4>Welcome, <span th:text="${#authentication.name}"></span></h4>
         <form method="POST" th:action="@{/logout}">
             <button type="submit" class="logout-btn">Logout</button>
         </form>
     </div>
 
+    <h1>Student Form</h1>
     <form id="studentForm" method="POST" th:action="@{${newStudent} ? '/saveStudent' : '/updateStudent'}" th:object="${student}">
-        <input type="hidden" th:field="*{studentId}"/>
+        <input type="hidden" th:field="*{studentId}">
 
         <div class="form-group">
             <label for="studentName">Name:</label>
-            <input type="text" required class="form-control" id="studentName" th:field="*{student_name}" placeholder="Enter student name"/>
+            <input type="text" class="form-control" id="studentName" th:field="*{student_name}" pattern="[A-Za-z\s]+" title="Numbers and special characters are not allowed." placeholder="Enter student name" required/>
         </div>
-
         <div class="form-row">
             <div class="col">
                 <div class="form-group">
-                    <label for="studentRoll">Roll No:</label>
-                    <input type="text" required class="form-control" id="studentRoll" th:field="*{student_roll}" placeholder="Enter roll number"/>
+                    <label for="studentClass">Class:</label>
+                    <select class="form-control" id="studentClass" th:field="*{student_class}" title="Please select Class." required>
+                        <option value="">-- Select Class --</option>
+                        <option value="12th">12th Grade</option>
+                        <option value="11th">11th Grade</option>
+                    </select>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
-                    <label for="studentClass">Class:</label>
-                    <select id="studentClass" required class="form-control" th:field="*{student_class}">
-                        <option value="">-- Select Class --</option>
-                        <option value="12th" th:selected="${student.student_class == '12th'}">12th Grade</option>
-                        <option value="11th" th:selected="${student.student_class == '11th'}">11th Grade</option>
-                    </select>
+                    <label for="studentRoll">Roll No:</label>
+                    <input type="text" class="form-control" id="studentRoll" th:field="*{student_roll}" placeholder="Enter student Roll number" required/>
                 </div>
             </div>
         </div>
-
         <div class="form-row">
             <div class="col">
                 <div class="form-group">
                     <label for="courseSelect">Course:</label>
-                    <select required id="courseSelect" class="form-control" name="courseId" th:field="*{courseId}" onchange="fetchSubjects(this.value)">
+                    <select id="courseSelect" class="form-control" name="courseId" th:field="*{courseId}" title="Please select course" required>
                         <option value="">-- Select Course --</option>
-                        <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}" th:selected="${course.courseId == student.courseId}"></option>
+                        <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
                     </select>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group">
                     <label for="subjectSelect">Subject:</label>
-                    <select required id="subjectSelect" class="form-control" th:field="*{subjectId}">
+                    <select id="subjectSelect" class="form-control" th:field="*{subjectId}" title="Please select subject." required>
                         <option value="">-- Select Subject --</option>
-                        <!-- Options populated by JavaScript based on selected course -->
                     </select>
                 </div>
             </div>
         </div>
-
-        <div class="btn-group">
-            <button type="submit" class="btn btn-primary" id="submitBtn" th:text="${newStudent ? 'Save Student' : 'Update Student'}"></button>
-            <button type="reset" class="btn btn-secondary btn-spacing" id="resetBtn">Reset</button>
+        <div class="form-group">
+            <input type="hidden" id="newStudent" value="${newStudent}">
+            <button type="button" id="submitStudent" class="btn btn-primary">Save Student</button>
+            <button type="reset" class="btn btn-secondary btn-spacing">Reset</button>
         </div>
     </form>
 
     <h2 class="mt-4">Student List</h2>
-    <table class="table table-striped">
+    <table id="studentTable" class="table table-striped">
         <thead class="thead-dark">
         <tr>
             <th>Student Name</th>
@@ -119,56 +96,137 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="student : ${listStudents}">
-            <td th:text="${student.student_name}"></td>
-            <td th:text="${student.student_class}"></td>
-            <td th:text="${student.student_roll}"></td>
-            <td th:text="${student.course.courseName}"></td>
-            <td th:text="${student.subject.subjectName}"></td>
-            <td>
-                <button class="btn btn-sm btn-primary editBtn" th:data-id="${student.studentId}">Edit</button>
-                <button class="btn btn-sm btn-danger deleteBtn" th:data-id="${student.studentId}">Delete</button>
-            </td>
-        </tr>
+        
         </tbody>
     </table>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.editBtn').forEach(function (button) {
-            button.addEventListener('click', function () {
-                let studentId = button.getAttribute('data-id');
-                window.location.href = `/edit/${studentId}`;
-            });
-        });
+$(document).ready(function() {
+    $("#courseSelect").change(function() {
+        var selectedCourse = $(this).val();
+        if (selectedCourse) {
+            fetchSubjects(selectedCourse);
+        } else {
+            $("#subjectSelect").empty().append('<option value="">-- Select Subject --</option>').prop("disabled", true);
+        }
+    });
+    getAllStudents();
 
-        document.querySelectorAll('.deleteBtn').forEach(function (button) {
-            button.addEventListener('click', function () {
-                if (confirm('Are you sure you want to delete this student?')) {
-                    let studentId = button.getAttribute('data-id');
-                    window.location.href = `/delete/${studentId}`;
+    // This is for adding or editing a student
+    $("#submitStudent").click(function() {
+        var studentForm = $("#studentForm");
+
+        if (studentForm[0].checkValidity()) {
+            var studentData = studentForm.serialize();
+            var url = $("#newStudent").val() === 'true' ? '/saveStudent' : '/updateStudent';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: studentData,
+                success: function(response) {
+                    getAllStudents(); // Reload the list of students
+                    studentForm[0].reset(); // Reset the form
+                    $("#newStudent").val('true'); // Set back to adding a new student
+                    $("#submitStudent").html('Save Student'); // Reset button text
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error saving student:", error);
                 }
             });
-        });
+        } else {
+            studentForm[0].reportValidity(); //this will trigger the native validation UI
+        }
     });
+    document.getElementById('courseSelect').addEventListener('change', function () {
+        let selectedCourse = this.options[this.selectedIndex].text;
+        let rollInput = document.getElementById('studentRoll');
+        rollInput.pattern = selectedCourse.charAt(0) + '\\d{3}';
+        rollInput.title = `Roll number must start with '${selectedCourse.charAt(0)}' followed by 3 digits`;
+    });
+});
 
-    function fetchSubjects(courseId) {
-        fetch(`/subjectList/${courseId}`)
-            .then(response => response.json())
-            .then(subjects => {
-                let subjectSelect = document.getElementById('subjectSelect');
-                subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
-                subjects.forEach(subject => {
-                    let option = document.createElement('option');
-                    option.value = subject.subjectId;
-                    option.textContent = subject.subjectName;
-                    subjectSelect.appendChild(option);
-                });
-                subjectSelect.disabled = subjects.length === 0;
-            })
-            .catch(error => console.error('Error fetching subjects:', error));
+function fetchSubjects(courseId) {
+    $.ajax({
+        url: '/subjectList/' + courseId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            $("#subjectSelect").empty().append('<option value="">-- Select Subject --</option>');
+            $.each(data, function(index, subject) {
+                var option = $("<option></option>").attr("value", subject.subjectId).text(subject.subjectName);
+                $("#subjectSelect").append(option);
+            });
+            $("#subjectSelect").prop("disabled", false);
+        },
+        error: function(xhr, status, error) {
+            console.log("Error fetching subjects:", error);
+            $("#subjectSelect").empty().append('<option value="">-- Error Loading Subjects --</option>').prop("disabled", true);
+        }
+    });
+}
+function editStudent(studentId) {
+    $.ajax({
+        url: '/getStudent/' + studentId,
+        type: 'GET',
+        dataType: 'json',
+        success: function(student) {
+            $("#studentId").val(student.studentId);
+            $("#studentName").val(student.student_name);
+            $("#studentClass").val(student.student_class);
+            $("#studentRoll").val(student.student_roll);
+            $("#courseSelect").val(student.courseId).trigger('change');
+            setTimeout(function() {
+                $("#subjectSelect").val(student.subjectId);
+            }, 100);
+            $("#newStudent").val('false');
+            $("#submitStudent").html('Edit Student');
+        },
+        error: function(xhr, status, error) {
+            console.log("Error loading student details:", error);
+        }
+    });
+}
+
+function deleteStudent(studentId) {
+    if (confirm("Are you sure you want to delete this student?")) {
+        $.ajax({
+            url: '/delete/' + studentId,
+            type: 'GET',
+            success: function(response) {
+                getAllStudents(); 
+            },
+            error: function(xhr, status, error) {
+                console.log("Error deleting student:", error);
+            }
+        });
     }
+}
+function getAllStudents() {
+    $.ajax({
+        url: '/listStudents',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            var tableBody = $("#studentTable tbody");
+            tableBody.empty();
+            $.each(data, function(index, student) {
+                var row = $("<tr></tr>")
+                    .append("<td>" + student.student_name + "</td>")
+                    .append("<td>" + student.student_class + "</td>")
+                    .append("<td>" + student.student_roll + "</td>")
+                    .append("<td>" + student.course.courseName + "</td>")
+                    .append("<td>" + student.subject.subjectName + "</td>")
+                    .append('<td><button class="btn btn-warning btn-sm" onclick="editStudent(' + student.studentId + ')">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteStudent(' + student.studentId + ')">Delete</button></td>');
+                tableBody.append(row);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.log("Error loading students:", error);
+        }
+    });
+}
 </script>
 </body>
 </html>
